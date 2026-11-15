@@ -5,15 +5,21 @@ namespace Cspp.Results;
 [Union]
 public readonly record struct Result : IUnion
 {
-    public static readonly Success Success = default(Success);
+    public static readonly Success Success = default;
     public static readonly Failure Failure = new(Error.Unknown);
     private readonly IResult result;
 
-    public Result(Success success) => this.result = success;
+    public Result(Success success)
+    {
+        result = success;
+    }
 
-    public Result(Failure failure) => this.result = failure;
+    public Result(Failure failure)
+    {
+        result = failure;
+    }
 
-    public object? Value => this.result;
+    public object? Value => result;
 }
 
 [Union]
@@ -21,9 +27,15 @@ public readonly record struct Result<T> : IUnion
 {
     private readonly IResult result;
 
-    public Result(Success<T> success) => this.result = success;
+    public Result(Success<T> success)
+    {
+        result = success;
+    }
 
-    public Result(Failure failure) => this.result = failure;
+    public Result(Failure failure)
+    {
+        result = failure;
+    }
 
-    public object? Value => this.result;
+    public object? Value => result;
 }

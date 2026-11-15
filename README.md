@@ -6,14 +6,15 @@ Small building blocks that extend C# with patterns found in other languages.
 
 [![NuGet](https://img.shields.io/nuget/v/Cspp.Results?logo=nuget)](https://www.nuget.org/packages/Cspp.Results)
 
-A `Result` type for returning success or failure without throwing exceptions. It is built on C# union types (`[Union]` / `IUnion`).
+A `Result` type for returning success or failure without throwing exceptions. It is built on C# union types (`[Union]` /
+`IUnion`).
 
-| Type | Description |
-|---|---|
-| `Result` | A union of `Success` or `Failure`. |
-| `Result<T>` | A union of `Success<T>` (holds a `Value`) or `Failure`. |
-| `Failure` | Holds an `Error`. |
-| `Error` | A `Code` and a `Message`, neither of which can be null or whitespace. `Error.Unknown` is a predefined default. |
+| Type        | Description                                                                                                    |
+|-------------|----------------------------------------------------------------------------------------------------------------|
+| `Result`    | A union of `Success` or `Failure`.                                                                             |
+| `Result<T>` | A union of `Success<T>` (holds a `Value`) or `Failure`.                                                        |
+| `Failure`   | Holds an `Error`.                                                                                              |
+| `Error`     | A `Code` and a `Message`, neither of which can be null or whitespace. `Error.Unknown` is a predefined default. |
 
 ### Usage
 
@@ -32,11 +33,15 @@ string message = Parse("42") switch
 };
 ```
 
-Union pattern matching works on the case value directly, so no casting is needed. Because the union's cases are known, the switch is exhaustive without a discard (`_`) arm. If you only need to check which case you have, `result.IsSuccess` and `result.IsFailure` are also available.
+Union pattern matching works on the case value directly, so no casting is needed. Because the union's cases are known,
+the switch is exhaustive without a discard (`_`) arm. If you only need to check which case you have, `result.IsSuccess`
+and `result.IsFailure` are also available.
 
-For the non-generic `Result`, use the predefined `Result.Success` and `Result.Failure` (which carries `Error.Unknown`), or convert a `Success` or `Failure` to `Result` implicitly.
+For the non-generic `Result`, use the predefined `Result.Success` and `Result.Failure` (which carries `Error.Unknown`),
+or convert a `Success` or `Failure` to `Result` implicitly.
 
-`new Success<T>()` and `new Failure()` are marked obsolete and throw `InvalidOperationException`. Always pass a value or an error.
+`new Success<T>()` and `new Failure()` are marked obsolete and throw `InvalidOperationException`. Always pass a value or
+an error.
 
 ## Requirements
 
@@ -49,9 +54,11 @@ dotnet build CSharpPlusPlus.slnx
 dotnet test CSharpPlusPlus.slnx
 ```
 
-Tests use NUnit with the constraint model (`Assert.That`). There is one fixture per class under test, and test names follow `Member_Scenario_ExpectedResult`.
+Tests use NUnit with the constraint model (`Assert.That`). There is one fixture per class under test, and test names
+follow `Member_Scenario_ExpectedResult`.
 
-The build treats warnings as errors and runs StyleCop analyzers. Package versions are managed centrally in `Directory.Packages.props`.
+The build treats warnings as errors and runs StyleCop analyzers. Package versions are managed centrally in
+`Directory.Packages.props`.
 
 ## Repository layout
 

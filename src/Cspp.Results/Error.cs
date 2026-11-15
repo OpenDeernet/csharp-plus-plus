@@ -15,8 +15,8 @@ public record Error
             throw new InvalidOperationException("None error provided.");
         }
 
-        this.Code = code;
-        this.Message = message;
+        Code = code;
+        Message = message;
     }
 
     public string Code { get; init; }
