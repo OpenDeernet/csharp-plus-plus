@@ -4,6 +4,8 @@ Small building blocks that extend C# with patterns found in other languages.
 
 ## Cspp.Results
 
+[![NuGet](https://img.shields.io/nuget/v/Cspp.Results?logo=nuget)](https://www.nuget.org/packages/Cspp.Results)
+
 A `Result` type for returning success or failure without throwing exceptions. It is built on C# union types (`[Union]` / `IUnion`).
 
 | Type | Description |
