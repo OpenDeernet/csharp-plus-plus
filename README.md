@@ -9,12 +9,12 @@ Small building blocks that extend C# with patterns found in other languages.
 A `Result` type for returning success or failure without throwing exceptions. It is built on C# union types (`[Union]` /
 `IUnion`).
 
-| Type        | Description                                                                                                    |
-|-------------|----------------------------------------------------------------------------------------------------------------|
-| `Result`    | A union of `Success` or `Failure`.                                                                             |
-| `Result<T>` | A union of `Success<T>` (holds a `Value`) or `Failure`.                                                        |
-| `Failure`   | Holds an `Error`.                                                                                              |
-| `Error`     | A `Code` and a `Message`, neither of which can be null or whitespace. `Error.Unknown` is a predefined default. |
+| Type        | Description                                                                                                      |
+|-------------|------------------------------------------------------------------------------------------------------------------|
+| `Result`    | A union of `Success` or `Failure`.                                                                               |
+| `Result<T>` | A union of a `T` value or `Failure`.                                                                             |
+| `Success`   | A singleton, obtained through `Result.Success`, marking success for the non-generic `Result`.                    |
+| `Failure`   | A `Code` and an `Error` message, neither null nor whitespace. Predefined: `Failure.Unknown`, `Failure.Uninitialized`. |
 
 ### Usage
 
@@ -23,25 +23,39 @@ using Cspp.Results;
 
 Result<int> Parse(string text) =>
     int.TryParse(text, out int value)
-        ? Result.FromValue(value)
-        : Result.FromError(new Error("Parse.Invalid", $"'{text}' is not a number."));
+        ? value
+        : new Failure("Parse.Invalid", $"'{text}' is not a number.");
 
 string message = Parse("42") switch
 {
-    Success<int> success => $"Parsed {success.Value}",
-    Failure failure => $"{failure.Error.Code}: {failure.Error.Message}",
+    int value => $"Parsed {value}",
+    Failure failure => $"{failure.Code}: {failure.Error}",
 };
 ```
 
-Union pattern matching works on the case value directly, so no casting is needed. Because the union's cases are known,
-the switch is exhaustive without a discard (`_`) arm. If you only need to check which case you have, `result.IsSuccess`
-and `result.IsFailure` are also available.
+A value or a `Failure` converts to `Result<T>` implicitly, and union pattern matching works on the case directly, so no
+wrapping or casting is needed. Because the union's cases are known, the switch is exhaustive without a discard (`_`)
+arm. If you only need to check which case you have, `result.IsSuccess` and `result.IsFailure` are also available, and
+`TryGetValue` gives you the case without pattern matching.
 
-For the non-generic `Result`, use the predefined `Result.Success` and `Result.Failure` (which carries `Error.Unknown`),
-or convert a `Success` or `Failure` to `Result` implicitly.
+For the non-generic `Result`, return `Result.Success` or a `Failure`.
 
-`new Success<T>()` and `new Failure()` are marked obsolete and throw `InvalidOperationException`. Always pass a value or
-an error.
+A success value may be `null` when `T` allows it (for example `Result<string?>`).
+
+A `default` result is a failure carrying `Failure.Uninitialized`, which has its own code and error so it can't be
+confused with `Failure.Unknown`.
+
+### Analyzer
+
+`T` must not be `Failure` or a type derived from it, because then a success value and a failure would look the same. The
+package includes an analyzer that reports this as a compile error:
+
+```csharp
+Result<Failure> result = default; // CSPP0001 compile error
+```
+
+The check covers types written in source, including type parameters constrained to `Failure`. It does not see a
+`Result<Failure>` that only exists through generic inference, such as a generic method called with a `Failure` argument.
 
 ## Requirements
 
@@ -63,8 +77,9 @@ The build treats warnings as errors and runs StyleCop analyzers. Package version
 ## Repository layout
 
 ```
-src/Cspp.Results/         Result library
-test/Cspp.Results.Tests/  NUnit tests
+src/Cspp.Results/            Result library
+src/Cspp.Results.Analyzers/  Roslyn analyzer shipped inside the Cspp.Results package
+test/Cspp.Results.Tests/     NUnit tests
 ```
 
 ## License
