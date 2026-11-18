@@ -14,10 +14,8 @@ public record Failure
 
     public Failure(string code, string error)
     {
-        if (!IsValid(code, error))
-        {
-            throw new InvalidOperationException("None failure provided.");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentException.ThrowIfNullOrWhiteSpace(error);
 
         Code = code;
         Error = error;
@@ -25,9 +23,4 @@ public record Failure
 
     public string Code { get; init; }
     public string Error { get; init; }
-
-    private static bool IsValid(string code, string error)
-    {
-        return !IsNullOrWhiteSpace(code) && !IsNullOrWhiteSpace(error);
-    }
 }
