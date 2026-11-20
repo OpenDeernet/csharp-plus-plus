@@ -9,14 +9,16 @@ public class FailureTests
     [Test]
     public void Constructor_WithNullCode_ThrowsArgumentNullException()
     {
-        Assert.That(() => new Failure(null!, "Error"),
+        Assert.That(
+            () => new Failure(null!, "Error"),
             Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("code"));
     }
 
     [Test]
     public void Constructor_WithNullError_ThrowsArgumentNullException()
     {
-        Assert.That(() => new Failure("Code", null!),
+        Assert.That(
+            () => new Failure("Code", null!),
             Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("error"));
     }
 
@@ -26,7 +28,8 @@ public class FailureTests
     [TestCase("\u2003")]
     public void Constructor_WithBlankCode_ThrowsArgumentException(string code)
     {
-        Assert.That(() => new Failure(code, "Error"),
+        Assert.That(
+            () => new Failure(code, "Error"),
             Throws.TypeOf<ArgumentException>().With.Property("ParamName").EqualTo("code"));
     }
 
@@ -36,7 +39,8 @@ public class FailureTests
     [TestCase("\u2003")]
     public void Constructor_WithBlankError_ThrowsArgumentException(string error)
     {
-        Assert.That(() => new Failure("Code", error),
+        Assert.That(
+            () => new Failure("Code", error),
             Throws.TypeOf<ArgumentException>().With.Property("ParamName").EqualTo("error"));
     }
 
@@ -65,6 +69,19 @@ public class FailureTests
         {
             Assert.That(Failure.Uninitialized.Code, Is.Not.EqualTo(Failure.Unknown.Code));
             Assert.That(Failure.Uninitialized.Error, Is.Not.EqualTo(Failure.Unknown.Error));
+        }
+    }
+
+    [Test]
+    public void CodeAndError_AreGetterOnly()
+    {
+        // with-expressions and object initializers cannot assign these properties after
+        // the constructor, so those bypass routes are compile-time errors rather than
+        // runtime ArgumentException cases.
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(typeof(Failure).GetProperty(nameof(Failure.Code))!.SetMethod, Is.Null);
+            Assert.That(typeof(Failure).GetProperty(nameof(Failure.Error))!.SetMethod, Is.Null);
         }
     }
 }
